@@ -55,7 +55,11 @@ def parse_and_extract_specs(row):
             engine_transmission = {}
         return {
             'Engine Displacement': engine_specs.get('Engine'),
-            'Mileage': engine_specs.get('Mileage')
+            'Mileage': engine_specs.get('Mileage'),
+            'Max Power': engine_specs.get('Max Power'),
+            'Torque': engine_specs.get('Torque'),
+            'Gearbox': engine_transmission.get('Gear Box'),
+            'Drive Type': engine_transmission.get('Drive Type')
         }
     except (ValueError, TypeError):
         return None
