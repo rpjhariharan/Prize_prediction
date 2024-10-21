@@ -1,0 +1,36 @@
+Over all available features in the dataset:
+
+Car Details: Ignition type, fuel type, body type, kilometers driven, transmission type, previous owners, OEM, model, year of manufacture, variant name, price, and trending information.
+Car Overview: Registration year, insurance validity, seats, RTO, engine displacement.
+Features: Top features, comfort & convenience, interior features, exterior features, safety features.
+Specifications: Mileage, engine, max power, torque, seats, color, engine type, cylinders, valves per cylinder, fuel supply system, bore x stroke, compression ratio, turbocharger, supercharger, dimensions (length, width, height, wheelbase), weight, gearbox, drive type, steering type, turning radius, brakes, top speed, acceleration, tyre type, doors, cargo volume.
+
+The key features required to train a machine learning model for used car price prediction from the provided list are:
+
+Car Details:
+Kilometers driven
+Year of manufacture
+Fuel type
+Body type
+Transmission type
+Previous owners
+OEM (brand)
+Model
+Variant name
+Price (This is the target variable)
+
+Car Overview:
+Registration year
+Insurance validity
+Engine displacement
+
+Features:
+Top features (comfort, convenience, safety)
+
+Specifications:
+Mileage
+Engine size
+Max power
+Torque
+Gearbox
+Drive type
