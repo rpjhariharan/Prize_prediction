@@ -1,0 +1,102 @@
+import pandas as pd
+import ast
+import os
+
+# Define the function to extract car details
+def parse_and_extract_details(row):
+    try:
+        details = ast.literal_eval(row)
+        return {
+            'Kilometers Driven': details.get('km'),
+            'Year of Manufacture': details.get('modelYear'),
+            'Fuel Type': details.get('ft'),
+            'Body Type': details.get('bt'),
+            'Transmission Type': details.get('transmission'),
+            'OEM': details.get('oem'),
+            'Model': details.get('model'),
+            'Variant': details.get('variantName'),
+            'Previous Owners': details.get('ownerNo')
+        }
+    except (ValueError, TypeError):
+        return None
+
+# Define the function to extract car overview
+def parse_and_extract_overview(row):
+    try:
+        overview = ast.literal_eval(row)
+        top_details = {item['key']: item['value'] for item in overview.get('top', [])}
+        return {
+            'Registration Year': top_details.get('Registration Year'),
+            'Insurance Validity': top_details.get('Insurance Validity')
+        }
+    except (ValueError, TypeError):
+        return None
+
+# Define the function to extract car features
+def parse_and_extract_features(row):
+    try:
+        features = ast.literal_eval(row)
+        top_features = features.get('top', [])
+        return {
+            'Top Features': top_features,
+        }
+    except (ValueError, TypeError):
+        return None
+
+# Define the function to extract car specs (engine, gearbox, drive type)
+def parse_and_extract_specs(row):
+    try:
+        specs = ast.literal_eval(row)
+        engine_specs = {item['key']: item['value'] for item in specs.get('top', [])}
+        engine_data = [item for item in specs.get('data', []) if item.get('heading') == 'Engine and Transmission']
+        if engine_data:
+            engine_transmission = {item['key']: item['value'] for item in engine_data[0].get('list', [])}
+        else:
+            engine_transmission = {}
+        return {
+            'Engine Displacement': engine_specs.get('Engine'),
+            'Mileage': engine_specs.get('Mileage'),
+            'Gearbox': engine_transmission.get('Gear Box'),
+            'Drive Type': engine_transmission.get('Drive Type')
+        }
+    except (ValueError, TypeError):
+        return None
+
+# Define the function to extract price
+def parse_and_extract_price(row):
+    try:
+        details = ast.literal_eval(row)
+        return details.get('price')
+    except (ValueError, TypeError):
+        return None
+
+# Main function to process the dataset
+def process_car_dataset(file_path, save_path):
+    # Load the dataset
+    data = pd.read_excel(file_path)
+
+    # Extract relevant features
+    details_df = data['new_car_detail'].apply(parse_and_extract_details).apply(pd.Series)
+    details_df['Price'] = data['new_car_detail'].apply(parse_and_extract_price)
+    overview_df = data['new_car_overview'].apply(parse_and_extract_overview).apply(pd.Series)
+    features_df = data['new_car_feature'].apply(parse_and_extract_features).apply(pd.Series)
+    specs_df = data['new_car_specs'].apply(parse_and_extract_specs).apply(pd.Series)
+
+    # Combine all extracted features into a new dataframe
+    final_df = pd.concat([details_df, overview_df, features_df, specs_df], axis=1)
+
+    # Save the processed dataset
+    file_name = os.path.basename(file_path)
+    save_file_path = os.path.join(save_path, f"preprocessed_{file_name}")
+    final_df.to_excel(save_file_path, index=False)
+    print(f"Processed dataset saved to: {save_file_path}")
+
+# Paths
+input_path = r'C:\Users\lenovo\OneDrive\Desktop\Car'
+output_path = r'C:\Users\lenovo\OneDrive\Desktop\Car\preprocessed ds'
+
+# Process all datasets in the input folder
+for file_name in os.listdir(input_path):
+    if file_name.endswith('.xlsx'):
+        file_path = os.path.join(input_path, file_name)
+        process_car_dataset(file_path, output_path)
