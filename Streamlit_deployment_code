@@ -1,0 +1,66 @@
+import streamlit as st
+import xgboost as xgb
+import pandas as pd
+import numpy as np
+
+# Load the trained model
+model = xgb.XGBRegressor()
+model.load_model(r"D:\OneDrive\Desktop\AIasServ\python\pythonProject\xgboost_model.json")
+
+# Title
+st.title("Welcome to Used Car Prediction Model")
+
+# Input features on the left side
+st.sidebar.header("Enter Car Details")
+
+# Define user inputs with units
+kilometers_driven = st.sidebar.number_input("Kilometers Driven (in km)", min_value=0)
+previous_owners = st.sidebar.number_input("Previous Owners (count)", min_value=0, step=1)
+engine_displacement = st.sidebar.number_input("Engine Displacement (in cc)", min_value=0)
+mileage = st.sidebar.number_input("Mileage (in kmpl)", min_value=0.0, format="%.2f")
+car_age = st.sidebar.number_input("Car Age (in years)", min_value=0)
+
+# Dropdowns for categorical features
+fuel_type = st.sidebar.selectbox("Fuel Type", ["CNG", "Diesel", "Electric", "LPG", "Petrol"])
+oem_brand = st.sidebar.selectbox("OEM/Brand", [
+    "Audi", "BMW", "Chevrolet", "Citroen", "Datsun", "Fiat", "Ford", "Hindustan Motors",
+    "Honda", "Hyundai", "Isuzu", "Jaguar", "Jeep", "Kia", "Land Rover", "Lexus", "MG",
+    "Mahindra", "Mahindra Renault", "Mahindra Ssangyong", "Maruti", "Mercedes-Benz",
+    "Mini", "Mitsubishi", "Nissan", "Opel", "Porsche", "Renault", "Skoda", "Tata",
+    "Toyota", "Volkswagen", "Volvo"])
+city = st.sidebar.selectbox("City", ["Bangalore", "Chennai", "Delhi", "Hyderabad", "Jaipur", "Kolkata"])
+body_type = st.sidebar.selectbox("Body Type", [
+    "Convertibles", "Coupe", "Hatchback", "Hybrids", "MUV", "Minivans", "Pickup Trucks",
+    "SUV", "Sedan", "Wagon"])
+insurance_validity = st.sidebar.selectbox("Insurance Validity", [
+    "1", "2", "Comprehensive", "Not Available", "Third Party", "Zero Dep"])
+
+# Button to predict price
+if st.button("Predict Price"):
+    # Encode categorical features (example assumes one-hot encoding in original model)
+    data = {
+        'Kilometers Driven': [kilometers_driven],
+        'Previous Owners': [previous_owners],
+        'Engine Displacement': [engine_displacement],
+        'Mileage': [mileage],
+        'Fuel Type_CNG': [1 if fuel_type == "CNG" else 0],
+        'Fuel Type_Diesel': [1 if fuel_type == "Diesel" else 0],
+        'Fuel Type_Electric': [1 if fuel_type == "Electric" else 0],
+        'Fuel Type_LPG': [1 if fuel_type == "LPG" else 0],
+        'Fuel Type_Petrol': [1 if fuel_type == "Petrol" else 0],
+        'OEM_' + oem_brand: [1],  # Specific brand encoding
+        'City_' + city: [1],  # Specific city encoding
+        'Body Type_' + body_type: [1],  # Specific body type encoding
+        'Insurance Validity_' + insurance_validity: [1],  # Insurance encoding
+        'Car Age': [car_age]
+    }
+
+    # Convert data to DataFrame, fill in missing categorical columns with 0
+    input_df = pd.DataFrame(data).reindex(columns=model.get_booster().feature_names, fill_value=0)
+
+    # Make prediction
+    predicted_price = model.predict(input_df)[0]
+
+    # Display result in the center
+    st.write("## Predicted Price of the Car:")
+    st.write(f"### ₹ {predicted_price:,.2f}")
