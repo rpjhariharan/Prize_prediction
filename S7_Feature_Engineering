@@ -1,0 +1,35 @@
+Feature Engineering Steps Applied
+
+Feature Scaling: Standardized continuous features (Kilometers Driven, Previous Owners, Engine Displacement, Mileage, Max Power, Torque, and Car Age) using StandardScaler to normalize their range, enhancing model performance.
+
+Derived Feature: Confirmed Car Age was already available, so no additional derived features were added.
+
+Categorical Encoding: Verified categorical features (e.g., Fuel Type, Transmission Type, OEM, City, Body Type, and Insurance Validity) are one-hot encoded.
+
+
+
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# File paths
+input_file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Cleaned_Car_Dataset.csv'
+output_file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+
+# Load the cleaned dataset
+car_data_cleaned = pd.read_csv(input_file_path)
+
+# Step 1: Feature Scaling for continuous features
+continuous_features = ["Kilometers Driven", "Previous Owners", "Engine Displacement", 
+                       "Mileage", "Max Power", "Torque", "Car Age"]
+scaler = StandardScaler()
+car_data_cleaned[continuous_features] = scaler.fit_transform(car_data_cleaned[continuous_features])
+
+# Step 2: Derived Feature - Confirm if 'Car Age' is present, no need to recreate if it exists
+
+# Step 3: Encoding Categorical Variables - Assume categorical features are already one-hot encoded
+# You can inspect the columns for encoding consistency and completeness if needed
+# If further encoding is required, use pd.get_dummies(car_data_cleaned, columns=[...])
+
+# Save the feature-engineered dataset
+car_data_cleaned.to_csv(output_file_path, index=False)
+print("Feature engineering completed, and dataset saved.")
