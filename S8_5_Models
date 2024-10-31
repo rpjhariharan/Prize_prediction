@@ -262,3 +262,12 @@ Test MAE: 134,802
 CV Mean R²: 0.92
 CV Std R²: ~0.03
 
+
+
+
+XGBoost Regressor has the highest accuracy with:
+
+Test R²: 0.92
+Test RMSE: 265,141
+Test MAE: 134,802
+This makes XGBoost the most reliable model for price prediction.
