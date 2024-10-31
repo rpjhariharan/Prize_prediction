@@ -92,8 +92,8 @@ def process_car_dataset(file_path, save_path):
     print(f"Processed dataset saved to: {save_file_path}")
 
 # Paths
-input_path = r'C:\Users\lenovo\OneDrive\Desktop\Car'
-output_path = r'C:\Users\lenovo\OneDrive\Desktop\Car\preprocessed ds'
+input_path = r'D:\OneDrive\Desktop\Car'
+output_path = r'D:\OneDrive\Desktop\Car\preprocessed ds'
 
 # Process all datasets in the input folder
 for file_name in os.listdir(input_path):
