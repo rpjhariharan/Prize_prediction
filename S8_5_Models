@@ -97,15 +97,11 @@ print("Train R²:", train_r2, "Test R²:", test_r2)
 print("Train RMSE:", train_rmse, "Test RMSE:", test_rmse)
 print("CV Mean R²:", cv_scores.mean(), "CV Std R²:", cv_scores.std()) 
 
-Decision Tree Regressor
-Train R²: 1.00 (overfitting likely)
-Test R²: ~0.74
-Train RMSE: 0
-Test RMSE: 422,774
-Train MAE: 0
-Test MAE: 211,090
-CV Mean R²: ~0.73
-CV Std R²: ~0.06
+Decision Tree Results:
+Train MAE: 0.0                      Test MAE: 179867.39967702868
+Train R²: 1.0                       Test R²: 0.7549039801273715
+Train RMSE: 0.0                     Test RMSE: 520913.20201449527
+CV Mean R²: 0.691670645617282       CV Std R²: 0.10400235876337932
 
 
 
@@ -156,16 +152,11 @@ print("Train R²:", train_r2, "Test R²:", test_r2)
 print("Train RMSE:", train_rmse, "Test RMSE:", test_rmse)
 print("CV Mean R²:", cv_scores.mean(), "CV Std R²:", cv_scores.std())
 
-
-Random Forest Regressor
-Train R²: ~0.95
-Test R²: ~0.89
-Train RMSE: ~153,000
-Test RMSE: 288,904
-Train MAE: 95,000
-Test MAE: 154,600
-CV Mean R²: ~0.89
-CV Std R²: ~0.03
+Random Forest Results:
+Train MAE: 50969.998942357626               Test MAE: 136235.44641098104
+Train R²: 0.9813511978740873                Test R²: 0.8478950291364753
+Train RMSE: 144959.46926353726              Test RMSE: 410363.7015327563
+CV Mean R²: 0.8514334268892239              CV Std R²: 0.03370134739953576
 
 
 
@@ -217,17 +208,11 @@ print("Train RMSE:", train_rmse, "Test RMSE:", test_rmse)
 print("CV Mean R²:", cv_scores.mean(), "CV Std R²:", cv_scores.std())
 
 
-Gradient Boosting Regressor
-Train R²: ~0.93
-Test R²: ~0.87
-Train RMSE: ~160,000
-Test RMSE: 316,267
-Train MAE: 110,000
-Test MAE: 167,409
-CV Mean R²: ~0.87
-CV Std R²: ~0.04
-
-
+Gradient Boosting Results:
+Train MAE: 139694.8432585323                Test MAE: 162177.94368510792
+Train R²: 0.9324920457772498                Test R²: 0.8489810280225152
+Train RMSE: 275802.7508089989               Test RMSE: 408896.12015263166
+CV Mean R²: 0.8359672394265608              CV Std R²: 0.030725204042089543
 
 
 
@@ -277,22 +262,20 @@ print("Train R²:", train_r2, "Test R²:", test_r2)
 print("Train RMSE:", train_rmse, "Test RMSE:", test_rmse)
 print("CV Mean R²:", cv_scores.mean(), "CV Std R²:", cv_scores.std())
 
-XGBoost Regressor
-Train R²: ~0.97
-Test R²: 0.92
-Train RMSE: ~130,000
-Test RMSE: 265,141
-Train MAE: ~95,000
-Test MAE: 134,802
-CV Mean R²: 0.92
-CV Std R²: ~0.03
+XGBoost Regressor Results:
+Train MAE: 47603.98596848561               Test MAE: 129154.55403777251
+Train R²: 0.9958639873136551               Test R²: 0.8498139627582278
+Train RMSE: 68267.19377968367              Test RMSE: 407766.9418333314
+CV Mean R²: 0.8549876704274961             CV Std R²: 0.029727135900826197
 
 
 
 
 XGBoost Regressor has the highest accuracy with:
 
-Test R²: 0.92
-Test RMSE: 265,141
-Test MAE: 134,802
+Test MAE: 129154.55403777251
+Test R²: 0.8498139627582278
+Test RMSE: 407766.9418333314
+CV Mean R²: 0.8549876704274961 
+CV Std R²: 0.029727135900826197
 This makes XGBoost the most reliable model for price prediction.
