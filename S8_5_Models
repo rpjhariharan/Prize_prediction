@@ -1,0 +1,264 @@
+1. Linear Regression
+
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
+
+# Load Dataset
+file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+car_data = pd.read_csv(file_path)
+
+# Define Features and Target
+X = car_data.drop(columns=['Price'])
+y = car_data['Price']
+
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train Model
+linear_model = LinearRegression()
+linear_model.fit(X_train, y_train)
+
+# Predict and Evaluate
+y_train_pred = linear_model.predict(X_train)
+y_test_pred = linear_model.predict(X_test)
+
+# Metrics
+print("Linear Regression Results:")
+print("Train MAE:", mean_absolute_error(y_train, y_train_pred))
+print("Test MAE:", mean_absolute_error(y_test, y_test_pred))
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+# Cross Validation
+cv_scores = cross_val_score(linear_model, X, y, cv=5, scoring='r2')
+print("CV Mean R²:", cv_scores.mean())
+print("CV Std R²:", cv_scores.std())
+
+
+Linear Regression	
+Train R²: ~0.68
+Test R²: ~0.68
+Train RMSE: 275,201
+Test RMSE: 582,524
+Train MAE: 210,000
+Test MAE: 275,201
+CV Mean R²: ~0.67
+CV Std R²: ~0.05
+
+
+
+
+2. Decision Tree Regressor
+
+import pandas as pd
+import numpy as np
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
+
+# Load Dataset
+file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+car_data = pd.read_csv(file_path)
+
+# Define Features and Target
+X = car_data.drop(columns=['Price'])
+y = car_data['Price']
+
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train Model
+tree_model = DecisionTreeRegressor(random_state=42)
+tree_model.fit(X_train, y_train)
+
+# Predict and Evaluate
+y_train_pred = tree_model.predict(X_train)
+y_test_pred = tree_model.predict(X_test)
+
+# Metrics
+print("Decision Tree Results:")
+print("Train MAE:", mean_absolute_error(y_train, y_train_pred))
+print("Test MAE:", mean_absolute_error(y_test, y_test_pred))
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+# Cross Validation
+cv_scores = cross_val_score(tree_model, X, y, cv=5, scoring='r2')
+print("CV Mean R²:", cv_scores.mean())
+print("CV Std R²:", cv_scores.std())
+
+Decision Tree Regressor
+Train R²: 1.00 (overfitting likely)
+Test R²: ~0.74
+Train RMSE: 0
+Test RMSE: 422,774
+Train MAE: 0
+Test MAE: 211,090
+CV Mean R²: ~0.73
+CV Std R²: ~0.06
+
+
+
+
+
+3. Random Forest Regressor
+
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
+
+# Load Dataset
+file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+car_data = pd.read_csv(file_path)
+
+# Define Features and Target
+X = car_data.drop(columns=['Price'])
+y = car_data['Price']
+
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train Model
+forest_model = RandomForestRegressor(random_state=42)
+forest_model.fit(X_train, y_train)
+
+# Predict and Evaluate
+y_train_pred = forest_model.predict(X_train)
+y_test_pred = forest_model.predict(X_test)
+
+# Metrics
+print("Random Forest Results:")
+print("Train MAE:", mean_absolute_error(y_train, y_train_pred))
+print("Test MAE:", mean_absolute_error(y_test, y_test_pred))
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+# Cross Validation
+cv_scores = cross_val_score(forest_model, X, y, cv=5, scoring='r2')
+print("CV Mean R²:", cv_scores.mean())
+print("CV Std R²:", cv_scores.std())
+
+
+Random Forest Regressor
+Train R²: ~0.95
+Test R²: ~0.89
+Train RMSE: ~153,000
+Test RMSE: 288,904
+Train MAE: 95,000
+Test MAE: 154,600
+CV Mean R²: ~0.89
+CV Std R²: ~0.03
+
+
+
+
+
+4. Gradient Boosting Regressor
+import pandas as pd
+import numpy as np
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
+
+
+# Load Dataset
+file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+car_data = pd.read_csv(file_path)
+
+# Define Features and Target
+X = car_data.drop(columns=['Price'])
+y = car_data['Price']
+
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train Model
+gb_model = GradientBoostingRegressor(random_state=42)
+gb_model.fit(X_train, y_train)
+
+# Predict and Evaluate
+y_train_pred = gb_model.predict(X_train)
+y_test_pred = gb_model.predict(X_test)
+
+# Metrics
+print("Gradient Boosting Results:")
+print("Train MAE:", mean_absolute_error(y_train, y_train_pred))
+print("Test MAE:", mean_absolute_error(y_test, y_test_pred))
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+# Cross Validation
+cv_scores = cross_val_score(gb_model, X, y, cv=5, scoring='r2')
+print("CV Mean R²:", cv_scores.mean())
+print("CV Std R²:", cv_scores.std())
+
+
+Gradient Boosting Regressor
+Train R²: ~0.93
+Test R²: ~0.87
+Train RMSE: ~160,000
+Test RMSE: 316,267
+Train MAE: 110,000
+Test MAE: 167,409
+CV Mean R²: ~0.87
+CV Std R²: ~0.04
+
+
+
+
+
+
+5. XGBoost Regressor
+import pandas as pd
+import numpy as np
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import train_test_split, cross_val_score
+
+
+# Load Dataset
+file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Feature_Engineered_Car_Dataset.csv'
+car_data = pd.read_csv(file_path)
+
+# Define Features and Target
+X = car_data.drop(columns=['Price'])
+y = car_data['Price']
+
+# Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Train Model
+xgb_model = XGBRegressor(random_state=42)
+xgb_model.fit(X_train, y_train)
+
+# Predict and Evaluate
+y_train_pred = xgb_model.predict(X_train)
+y_test_pred = xgb_model.predict(X_test)
+
+# Metrics
+print("XGBoost Results:")
+print("Train MAE:", mean_absolute_error(y_train, y_train_pred))
+print("Test MAE:", mean_absolute_error(y_test, y_test_pred))
+print("Train R²:", r2_score(y_train, y_train_pred))
+print("Test R²:", r2_score(y_test, y_test_pred))
+
+# Cross Validation
+cv_scores = cross_val_score(xgb_model, X, y, cv=5, scoring='r2')
+print("CV Mean R²:", cv_scores.mean())
+print("CV Std R²:", cv_scores.std())
+
+XGBoost Regressor
+Train R²: ~0.97
+Test R²: 0.92
+Train RMSE: ~130,000
+Test RMSE: 265,141
+Train MAE: ~95,000
+Test MAE: 134,802
+CV Mean R²: 0.92
+CV Std R²: ~0.03
+
