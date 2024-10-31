@@ -1,0 +1,32 @@
+import pandas as pd
+import os
+
+# Define paths
+input_folder = r"D:\OneDrive\Desktop\Car\Cleaned"
+output_file_path = r"D:\OneDrive\Desktop\Car\Cleaned\merged_cars_dataset.xlsx"
+
+# Mapping of filenames to their respective cities
+city_mapping = {
+    "bangalore_cars.xlsx": "Bangalore",
+    "chennai_cars.xlsx": "Chennai",
+    "delhi_cars.xlsx": "Delhi",
+    "hyderabad_cars.xlsx": "Hyderabad",
+    "jaipur_cars.xlsx": "Jaipur",
+    "kolkata_cars.xlsx": "Kolkata"
+}
+
+# List to hold each city's dataset
+datasets = []
+
+# Load, process each file, and add the 'City' column
+for filename, city in city_mapping.items():
+    file_path = os.path.join(input_folder, filename)
+    dataset = pd.read_excel(file_path)
+    dataset['City'] = city  # Add city column
+    datasets.append(dataset)  # Add to the list of datasets
+
+# Concatenate all datasets into a single DataFrame
+merged_dataset = pd.concat(datasets, ignore_index=True)
+
+# Save the merged dataset
+merged_dataset.to_excel(output_file_path, index=False)
