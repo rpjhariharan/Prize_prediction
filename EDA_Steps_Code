@@ -1,0 +1,83 @@
+Steps of EDA:
+Data Summary and Structure: Checks for column data types, basic statistics, and unique values.
+Handling Missing Values: Confirms and handles any missing values (none in this case).
+Data Quality Check: Identifies and removes duplicate rows.
+Univariate Analysis: Visualizes individual feature distributions:
+Histograms for continuous variables.
+Bar plots for categorical variables (e.g., Fuel Type).
+Bivariate Analysis: Analyzes relationships between features using:
+Correlation heatmap of continuous features.
+
+List of Graphs:
+Histogram for each continuous variable.
+Bar plot for a sample categorical variable (Fuel Type_Petrol).
+Correlation heatmap for continuous variables.
+
+Distribution Of Kilometers Driven
+Distribution Of Previous Owners
+Distribution Of Price
+Distribution Of Engine Displacement
+Distribution Of Mileage
+Distribution Of Max Power
+Distribution Of Torque
+Distribution Of Car Age
+Fuel Type Distribution 
+Correlation Heatmap For Continuous Variables
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# File paths
+input_file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Processed_Car_Dataset.csv'
+output_file_path = r'D:\OneDrive\Desktop\Car\Cleaned\Cleaned_Car_Dataset.csv'
+
+# Load the dataset
+car_data = pd.read_csv(input_file_path)
+
+# Step 1: Data Summary and Structure
+data_summary = car_data.describe().T
+unique_values = car_data.nunique()
+
+# Step 2: Handling Missing Values
+missing_values = car_data.isnull().sum()
+
+# Step 3: Data Quality Check - Removing duplicates
+car_data_cleaned = car_data.drop_duplicates()
+
+# Step 4: Univariate Analysis - Histograms for continuous variables
+def plot_histograms(data, columns):
+    for col in columns:
+        plt.figure(figsize=(8, 4))
+        sns.histplot(data[col], kde=True)
+        plt.title(f'Distribution of {col}')
+        plt.xlabel(col)
+        plt.ylabel('Frequency')
+        plt.show()
+
+# Define continuous columns for histogram plotting
+continuous_cols = ["Kilometers Driven", "Previous Owners", "Price", 
+                   "Engine Displacement", "Mileage", "Max Power", 
+                   "Torque", "Car Age"]
+
+plot_histograms(car_data_cleaned, continuous_cols)
+
+# Bar plot for a sample categorical column - "Fuel Type_Petrol"
+plt.figure(figsize=(8, 4))
+sns.countplot(y=car_data_cleaned['Fuel Type_Petrol'])
+plt.title('Fuel Type Distribution - Sample (Petrol)')
+plt.xlabel('Frequency')
+plt.ylabel('Fuel Type')
+plt.show()
+
+# Step 5: Bivariate Analysis - Correlation heatmap for numerical features
+plt.figure(figsize=(12, 8))
+correlation_matrix = car_data_cleaned[continuous_cols].corr()
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", vmin=-1, vmax=1)
+plt.title('Correlation Heatmap for Continuous Variables')
+plt.show()
+
+# Save the cleaned dataset
+car_data_cleaned.to_csv(output_file_path, index=False)
+print("EDA completed and cleaned dataset saved.")
