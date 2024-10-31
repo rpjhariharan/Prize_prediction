@@ -1,0 +1,78 @@
+Steps Carried Out in Preprocessing
+
+Handle Missing Values:
+Numerical Columns: Missing values in numerical columns were filled with the median.
+Categorical Columns: Missing values in categorical columns were filled with the mode (most frequent value).
+
+Convert Categorical Variables:
+Used one-hot encoding for categorical columns like Fuel Type, Transmission Type, OEM, City, Body Type, and Insurance Validity to create binary columns for each unique category, ensuring Bangalore and all other cities are included.
+
+Feature Engineering:
+Car Age: Created a new column, Car Age, by calculating the difference between the current year (2024) and the Year of Manufacture.
+Top Features Parsing: Added binary columns for commonly mentioned features like Power Steering, Power Windows, Airbags, ABS, and Central Locking, indicating the presence of each feature.
+
+Scaling and Normalization:
+Standardized numerical columns (Kilometers Driven, Engine Displacement, Mileage, Max Power, and Torque) to ensure consistent scale for model training.
+
+Drop Redundant Columns:
+Removed columns (Variant, Model, Year of Manufacture, Registration Year) that were either redundant or less relevant for prediction after feature engineering.
+
+
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+
+# File paths
+file_path = r"D:\OneDrive\Desktop\Car\Cleaned\Merged_Cars_Dataset_with_City_Column.csv"
+save_path = r"D:\OneDrive\Desktop\Car\Cleaned\Processed_Car_Dataset.csv"
+
+# Load the dataset
+data = pd.read_csv(file_path)
+
+# Copy the dataset to avoid altering the original
+processed_data = data.copy()
+
+# Step 1: Handle Missing Values
+# Impute numerical columns with median and categorical columns with mode
+num_imputer = SimpleImputer(strategy='median')
+cat_imputer = SimpleImputer(strategy='most_frequent')
+
+# Impute numerical columns
+num_cols = processed_data.select_dtypes(include=['float64', 'int64']).columns
+processed_data[num_cols] = num_imputer.fit_transform(processed_data[num_cols])
+
+# Impute categorical columns
+cat_cols = processed_data.select_dtypes(include=['object']).columns
+processed_data[cat_cols] = cat_imputer.fit_transform(processed_data[cat_cols])
+
+# Step 2: Convert Categorical Variables
+# One-hot encode categorical columns including 'City' to capture all cities
+encoded_data = pd.get_dummies(processed_data, columns=['Fuel Type', 'Transmission Type', 'OEM', 'City', 'Body Type', 'Insurance Validity'], drop_first=False)
+
+# Step 3: Feature Engineering
+# Calculate Car Age from the current year (2024)
+encoded_data['Car Age'] = 2024 - encoded_data['Year of Manufacture']
+
+# Parse 'Top Features' for presence of common features
+common_features = ['Power Steering', 'Power Windows', 'Airbags', 'ABS', 'Central Locking']
+for feature in common_features:
+    encoded_data[feature] = encoded_data['Top Features'].apply(lambda x: int(feature in str(x)))
+
+# Drop 'Top Features' as it's now encoded in binary columns
+encoded_data.drop(columns=['Top Features'], inplace=True)
+
+# Step 4: Scaling and Normalization
+# Standardize numerical columns
+scaler = StandardScaler()
+scaled_cols = ['Kilometers Driven', 'Engine Displacement', 'Mileage', 'Max Power', 'Torque']
+encoded_data[scaled_cols] = scaler.fit_transform(encoded_data[scaled_cols])
+
+# Step 5: Drop Redundant Columns
+# Remove columns not critical for prediction
+encoded_data.drop(columns=['Variant', 'Model', 'Year of Manufacture', 'Registration Year'], inplace=True)
+
+# Save the preprocessed dataset
+encoded_data.to_csv(save_path, index=False)
+print(f"Processed dataset saved to {save_path}")
