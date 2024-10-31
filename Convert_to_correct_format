@@ -1,0 +1,61 @@
+Kilometers Driven: Remove commas and convert values to integers.
+Price: Apply convert_price to turn formatted prices into integers.
+Registration Year: Extract only the year and convert it to an integer.
+Engine Displacement: Remove 'CC', handle NaN values, and convert to integer.
+Mileage: Remove 'kmpl' and convert values to float.
+Max Power: Remove 'bhp' and convert values to float.
+Torque: Remove 'Nm' and convert values to float.
+
+
+
+import pandas as pd
+import os
+
+# Define file paths
+input_folder = r"D:\OneDrive\Desktop\Car\preprocessed ds"
+output_folder = r"D:\OneDrive\Desktop\Car\Cleaned"
+
+# Function to convert the 'Price' column values from string to integer
+def convert_price(price):
+    price = price.replace('₹', '').replace(',', '').strip()
+    if 'Lakh' in price:
+        return int(float(price.replace('Lakh', '').strip()) * 100000)
+    elif 'Thousand' in price:
+        return int(float(price.replace('Thousand', '').strip()) * 1000)
+    return int(price) if price.isdigit() else None
+
+# Process each Excel file in the input folder
+for filename in os.listdir(input_folder):
+    if filename.endswith(".xlsx"):
+        # Load the dataset
+        file_path = os.path.join(input_folder, filename)
+        dataset = pd.read_excel(file_path)
+        
+        # Step 1: Convert "Kilometers Driven" column from string to integer
+        dataset['Kilometers Driven'] = dataset['Kilometers Driven'].str.replace(',', '').astype(int)
+        
+        # Step 2: Convert "Price" column from string to integer
+        dataset['Price'] = dataset['Price'].apply(convert_price)
+        
+        # Step 3: Format "Registration Year" to integer, keeping only the year
+        dataset['Registration Year'] = dataset['Registration Year'].str.extract(r'(\d{4})').astype(float).astype('Int64')
+        
+        # Step 4: Remove 'cc' from "Engine Displacement" and convert to integer
+        dataset['Engine Displacement'] = dataset['Engine Displacement'].str.replace('CC', '').str.strip()
+        dataset['Engine Displacement'] = pd.to_numeric(dataset['Engine Displacement'], errors='coerce').fillna(0).astype(int)
+        
+        # Step 5: Remove 'kmpl' from "Mileage" and convert to float
+        dataset['Mileage'] = dataset['Mileage'].str.replace('kmpl', '').str.strip()
+        dataset['Mileage'] = pd.to_numeric(dataset['Mileage'], errors='coerce')
+        
+        # Step 6: Remove 'bhp' from "Max Power" and convert to float
+        dataset['Max Power'] = dataset['Max Power'].str.replace('bhp', '').str.strip()
+        dataset['Max Power'] = pd.to_numeric(dataset['Max Power'], errors='coerce')
+        
+        # Step 7: Remove 'Nm' from "Torque" and convert to float
+        dataset['Torque'] = dataset['Torque'].str.replace('Nm', '').str.strip()
+        dataset['Torque'] = pd.to_numeric(dataset['Torque'], errors='coerce')
+        
+        # Save the cleaned dataset
+        output_file_path = os.path.join(output_folder, f"cleaned_{filename}")
+        dataset.to_excel(output_file_path, index=False)
