@@ -1,0 +1,125 @@
+Steps
+Handling Missing Values:
+
+Numerical Columns: Filled missing values in columns like Price, Kilometers Driven, Car Age, and Mileage with the median of each column.
+Previous Owners: Filled missing values using the mode (most common value).
+Categorical Columns: Filled missing values in City, OEM, Model, and Variant with the mode of each respective column.
+Handling Outliers:
+
+Used the Interquartile Range (IQR) method to identify and cap outliers for the columns Price, Kilometers Driven, Car Age, and Mileage.
+For each of these columns, values outside the IQR-based lower and upper bounds were capped.
+Depreciation Calculations:
+
+Applied depreciation percentages based on Car Age, Kilometers Driven, and Previous Owners.
+Added a fixed 30% Other Depreciation.
+Weighted each depreciation component: 55% for age, 15% for kilometers driven, 10% for previous owners, and 25% for other depreciation.
+Final Adjusted Price Calculation:
+
+Calculated the Adjusted Price by subtracting the Weighted Depreciation from the original Price.
+
+
+import pandas as pd
+
+# Load the dataset
+file_path = '/mnt/data/Book1.xlsx'
+data = pd.read_excel(file_path)
+
+# Handling missing values
+# For numerical columns, filling missing values with the median
+data['Price'].fillna(data['Price'].median(), inplace=True)
+data['Kilometers Driven'].fillna(data['Kilometers Driven'].median(), inplace=True)
+data['Car Age'].fillna(data['Car Age'].median(), inplace=True)
+data['Mileage'].fillna(data['Mileage'].median(), inplace=True)
+data['Previous Owners'].fillna(data['Previous Owners'].mode()[0], inplace=True)  # assuming mode for simplicity
+
+# For categorical columns, filling missing values with the mode
+data['City'].fillna(data['City'].mode()[0], inplace=True)
+data['OEM'].fillna(data['OEM'].mode()[0], inplace=True)
+data['Model'].fillna(data['Model'].mode()[0], inplace=True)
+data['Variant'].fillna(data['Variant'].mode()[0], inplace=True)
+
+# Handling outliers using the IQR method for numerical columns
+def handle_outliers(column):
+    Q1 = data[column].quantile(0.25)
+    Q3 = data[column].quantile(0.75)
+    IQR = Q3 - Q1
+    lower_bound = Q1 - 1.5 * IQR
+    upper_bound = Q3 + 1.5 * IQR
+    # Capping the outliers to lower and upper bounds
+    data[column] = data[column].clip(lower=lower_bound, upper=upper_bound)
+
+# Applying outlier treatment on relevant columns
+handle_outliers('Price')
+handle_outliers('Kilometers Driven')
+handle_outliers('Car Age')
+handle_outliers('Mileage')
+
+# Define the depreciation functions based on provided rules
+def age_depreciation(age):
+    if age <= 0.5:
+        return 0.10
+    elif age <= 1:
+        return 0.15
+    elif age <= 2:
+        return 0.20
+    elif age <= 3:
+        return 0.25
+    elif age <= 4:
+        return 0.32
+    elif age <= 5:
+        return 0.41
+    elif age <= 6:
+        return 0.52
+    elif age <= 7:
+        return 0.60
+    elif age <= 8:
+        return 0.65
+    elif age <= 9:
+        return 0.70
+    else:
+        return 0.80
+
+def km_driven_depreciation(kms):
+    if kms <= 10000:
+        return 0.02
+    elif kms <= 20000:
+        return 0.04
+    elif kms <= 30000:
+        return 0.06
+    elif kms <= 40000:
+        return 0.08
+    elif kms <= 50000:
+        return 0.10
+    elif kms <= 70000:
+        return 0.14
+    elif kms <= 90000:
+        return 0.17
+    else:
+        return 0.20
+
+def owner_depreciation(owners):
+    if owners == 1:
+        return 0.05
+    elif owners == 2:
+        return 0.10
+    elif owners == 3:
+        return 0.20
+    else:
+        return 0.30
+
+# Calculate individual depreciation values
+data['Age Depreciation'] = data['Price'] * data['Car Age'].apply(age_depreciation)
+data['KM Depreciation'] = data['Price'] * data['Kilometers Driven'].apply(km_driven_depreciation)
+data['Owner Depreciation'] = data['Price'] * data['Previous Owners'].apply(owner_depreciation)
+data['Other Depreciation'] = data['Price'] * 0.30  # constant 30% other depreciation
+
+# Apply weights to each depreciation
+data['Weighted Depreciation'] = (
+    data['Age Depreciation'] * 0.55 +
+    data['KM Depreciation'] * 0.15 +
+    data['Owner Depreciation'] * 0.10 +
+    data['Other Depreciation'] * 0.25
+)
+
+# Calculate final price after depreciation
+data['Adjusted Price'] = data['Price'] - data['Weighted Depreciation']
