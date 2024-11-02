@@ -1,78 +1,62 @@
-Steps Carried Out in Preprocessing
+Steps Carried Out on the Dataset
+Age Calculation:
 
-Handle Missing Values:
-Numerical Columns: Missing values in numerical columns were filled with the median.
-Categorical Columns: Missing values in categorical columns were filled with the mode (most frequent value).
+Calculated the car's age by subtracting the "Year of Manufacture" from the reference year (2024) to obtain an "Age" feature.
+Dropped the original "Year of Manufacture" column as it’s now represented by "Age."
+Encoding Categorical Features:
 
-Convert Categorical Variables:
-Used one-hot encoding for categorical columns like Fuel Type, Transmission Type, OEM, City, Body Type, and Insurance Validity to create binary columns for each unique category, ensuring Bangalore and all other cities are included.
+Applied one-hot encoding for categorical columns like "Fuel Type," "Transmission Type," "Body Type," "OEM," and "City," which helps capture category-specific information.
+Insurance Validity Conversion:
 
-Feature Engineering:
-Car Age: Created a new column, Car Age, by calculating the difference between the current year (2024) and the Year of Manufacture.
-Top Features Parsing: Added binary columns for commonly mentioned features like Power Steering, Power Windows, Airbags, ABS, and Central Locking, indicating the presence of each feature.
+Converted "Insurance Validity" into a binary indicator, with 1 for "Comprehensive" insurance and 0 for other types.
+Extracting Top Features:
 
-Scaling and Normalization:
-Standardized numerical columns (Kilometers Driven, Engine Displacement, Mileage, Max Power, and Torque) to ensure consistent scale for model training.
+Extracted commonly observed features in the "Top Features" column (e.g., "Power Steering," "Power Windows," "Air Conditioning") and represented each as a binary column indicating presence or absence.
+Creating an Interaction Feature:
 
-Drop Redundant Columns:
-Removed columns (Variant, Model, Year of Manufacture, Registration Year) that were either redundant or less relevant for prediction after feature engineering.
+Created an interaction term "Age × Kilometers Driven" to capture the combined depreciation effects of age and mileage, enhancing model performance.
 
 
 
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-from sklearn.impute import SimpleImputer
-
-# File paths
-file_path = r"D:\OneDrive\Desktop\Car\Cleaned\Merged_Cars_Dataset_with_City_Column.csv"
-save_path = r"D:\OneDrive\Desktop\Car\Cleaned\Processed_Car_Dataset.csv"
+import ast
 
 # Load the dataset
-data = pd.read_csv(file_path)
+file_path = '/mnt/data/Merged_Cars_Dataset_with_City_Column.csv'
+dataset = pd.read_csv(file_path)
 
-# Copy the dataset to avoid altering the original
-processed_data = data.copy()
+# Step 1: Calculate Age
+dataset['Age'] = 2024 - dataset['Year of Manufacture']
+dataset.drop(columns=['Year of Manufacture'], inplace=True)
 
-# Step 1: Handle Missing Values
-# Impute numerical columns with median and categorical columns with mode
-num_imputer = SimpleImputer(strategy='median')
-cat_imputer = SimpleImputer(strategy='most_frequent')
+# Step 2: One-Hot Encoding for Categorical Features
+dataset = pd.get_dummies(dataset, columns=['Fuel Type', 'Transmission Type', 'Body Type', 'OEM', 'City'], drop_first=True)
 
-# Impute numerical columns
-num_cols = processed_data.select_dtypes(include=['float64', 'int64']).columns
-processed_data[num_cols] = num_imputer.fit_transform(processed_data[num_cols])
+# Step 3: Convert 'Insurance Validity' to Binary Feature
+dataset['Insurance_Validity'] = dataset['Insurance Validity'].apply(lambda x: 1 if x == 'Comprehensive' else 0)
+dataset.drop(columns=['Insurance Validity'], inplace=True)
 
-# Impute categorical columns
-cat_cols = processed_data.select_dtypes(include=['object']).columns
-processed_data[cat_cols] = cat_imputer.fit_transform(processed_data[cat_cols])
+# Step 4: Extract Common Features from 'Top Features'
+# Define common features to extract
+common_features = ['Power Steering', 'Power Windows', 'Air Conditioning', 'Sunroof', 'Anti Lock Braking System']
 
-# Step 2: Convert Categorical Variables
-# One-hot encode categorical columns including 'City' to capture all cities
-encoded_data = pd.get_dummies(processed_data, columns=['Fuel Type', 'Transmission Type', 'OEM', 'City', 'Body Type', 'Insurance Validity'], drop_first=False)
-
-# Step 3: Feature Engineering
-# Calculate Car Age from the current year (2024)
-encoded_data['Car Age'] = 2024 - encoded_data['Year of Manufacture']
-
-# Parse 'Top Features' for presence of common features
-common_features = ['Power Steering', 'Power Windows', 'Airbags', 'ABS', 'Central Locking']
+# Initialize columns for each feature
 for feature in common_features:
-    encoded_data[feature] = encoded_data['Top Features'].apply(lambda x: int(feature in str(x)))
+    dataset[feature] = 0  # Initialize with 0
 
-# Drop 'Top Features' as it's now encoded in binary columns
-encoded_data.drop(columns=['Top Features'], inplace=True)
+# Parse 'Top Features' and set flags for common features
+for i, row in dataset.iterrows():
+    features_list = ast.literal_eval(row['Top Features'])
+    available_features = [f['value'] for f in features_list if 'value' in f]
+    for feature in common_features:
+        if feature in available_features:
+            dataset.at[i, feature] = 1  # Set flag to 1 if feature is present
 
-# Step 4: Scaling and Normalization
-# Standardize numerical columns
-scaler = StandardScaler()
-scaled_cols = ['Kilometers Driven', 'Engine Displacement', 'Mileage', 'Max Power', 'Torque']
-encoded_data[scaled_cols] = scaler.fit_transform(encoded_data[scaled_cols])
+# Drop original 'Top Features' column
+dataset.drop(columns=['Top Features'], inplace=True)
 
-# Step 5: Drop Redundant Columns
-# Remove columns not critical for prediction
-encoded_data.drop(columns=['Variant', 'Model', 'Year of Manufacture', 'Registration Year'], inplace=True)
+# Step 5: Create Interaction Feature 'Age * Kilometers Driven'
+dataset['Age_Kilometers_Interaction'] = dataset['Age'] * dataset['Kilometers Driven']
 
-# Save the preprocessed dataset
-encoded_data.to_csv(save_path, index=False)
-print(f"Processed dataset saved to {save_path}")
+# Display the preprocessed dataset
+dataset.head()
