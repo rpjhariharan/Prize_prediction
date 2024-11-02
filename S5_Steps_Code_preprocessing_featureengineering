@@ -16,6 +16,14 @@ Creating an Interaction Feature:
 
 Created an interaction term "Age × Kilometers Driven" to capture the combined depreciation effects of age and mileage, enhancing model performance.
 
+Missing Values:
+
+Numerical columns were filled with the median value.
+Categorical columns were filled with the mode (most frequent value).
+Outlier Handling:
+
+Outliers in numerical columns were capped using the IQR method, limiting values to the lower and upper bounds (whiskers).
+
 
 
 import pandas as pd
